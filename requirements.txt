@@ -1,0 +1,9 @@
+fastapi==0.73.0
+pydantic[email]
+motor==2.5.1
+beanie==1.11.0
+passlib[bcrypt] 
+PyJWT==1.7.1
+python-decouple==3.3
+uvicorn[standard]
+fastapi-jwt-auth
