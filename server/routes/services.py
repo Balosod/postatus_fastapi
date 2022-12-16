@@ -144,30 +144,3 @@ async def create_delivery(data:DeliverySchema,Authorize: AuthJWT = Depends()) ->
     await delivery.create()
     
     return {"message":"delivery successfully uploaded"}
-
-
-
-@router.get("/findall", response_description="all data")
-async def create_account() -> dict:
-    
-    data1 = await Product.find(
-    Product.what_to_sell == "phone", 
-    fetch_links=True
-    ).to_list()
-    data2 = await Service.find(
-    Service.what_to_do == "Build website", 
-    fetch_links=True
-    ).to_list()
-    data3 = await Event.find(
-    Event.what_is_it_about == "Wedding", 
-    fetch_links=True
-    ).to_list()
-    data4 = await Delivery.find(
-    Delivery.pick_up_location == "Osogbo", 
-    fetch_links=True
-    ).to_list()
-    
-    
-
-    
-    return {"product":data1,"service":data2,"event":data3,"delivery":data4}
