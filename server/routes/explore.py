@@ -15,10 +15,4 @@ async def get_all_explore() -> dict:
     return {"product":product,"service":service,"event":event,"delivery":delivery}
 
 
-@router.get("/{loc}")
-async def explore_by_location() -> dict:
-    
-    product = await Product.find("osun").to_list()
-    
-        
-    return {"product":product}
+
