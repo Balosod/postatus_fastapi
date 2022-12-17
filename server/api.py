@@ -27,7 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/media", StaticFiles(directory="server/media"), name="media")
+#app.mount("/media", StaticFiles(directory="server/media"), name="media")
     
 
 @AuthJWT.load_config
