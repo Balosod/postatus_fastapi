@@ -3,6 +3,8 @@ import motor.motor_asyncio
 
 from server.models.user import User
 from server.models.interest import Interest
+from server.models.order_history import Order
+from server.models.order_feedback import Feedback
 from server.models.services import (
     CommonBase, Product,
     Service, Event, Delivery, 
@@ -20,5 +22,6 @@ async def init_db():
 
     await init_beanie(database=db_name, document_models=[User,CommonBase,Product, Service,
                                                          Event, Delivery, ProductImages,
-                                                         ServiceImages, EventImages,Interest])
+                                                         ServiceImages, EventImages,Interest,
+                                                         Order,Feedback])
 

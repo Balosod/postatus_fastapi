@@ -3,6 +3,8 @@ from fastapi_jwt_auth import AuthJWT
 from server.models.user import User
 import base64
 import uuid
+from ..utils.s3_storage import client
+from ..settings import CONFIG_SETTINGS
 from server.models.services import (Product, Service, Event, 
                                     Delivery, ProductImages,
                                     ServiceImages, EventImages, 
@@ -10,28 +12,56 @@ from server.models.services import (Product, Service, Event,
 
 
 
+
 router = APIRouter()
 
-@router.post("/")
+async def upload_image_to_file_path(images,model_name):
+    image_obj_list = []
+    for image in images:
+        img_name = str(uuid.uuid4())[:10] + '.png'
+        image_as_bytes = str.encode(image) 
+        img_recovered = base64.b64decode(image_as_bytes)
+        
+        with open("server/media/image/uploaded_" + img_name, "wb") as f:
+            f.write(img_recovered)
+            
+        upload_image = model_name(img=f"http://localhost:8000/media/image/uploaded_{img_name}")
+        image_obj_list.append(upload_image)
+        await upload_image.create()
+    return image_obj_list
+    
+async def upload_image_to_S3_bucket(images,model_name):
+    image_obj_list = []
+    for image in images:
+        img_name = str(uuid.uuid4())[:10] + '.png'
+        image_as_bytes = str.encode(image) 
+        img_recovered = base64.b64decode(image_as_bytes)
+        
+        client.put_object(
+        Bucket=CONFIG_SETTINGS.BUCKET,
+        Body=img_recovered,
+        Key=f"image/{img_name}",
+        ACL=CONFIG_SETTINGS.ACL,
+        ContentType="image/png"
+        )
+            
+        upload_image = model_name(img=f"https://postatusapistorage.nyc3.digitaloceanspaces.com/image/{img_name}")
+        image_obj_list.append(upload_image)
+        await upload_image.create()
+    return image_obj_list
+
+@router.post("/services")
 async def create_services(data:GoodsAndServiceEventSchema,Authorize: AuthJWT = Depends()) -> dict:
     Authorize.jwt_required()
     current_user = Authorize.get_jwt_subject()
     
     user = await User.find_one(User.email == current_user)
-    image_obj = []
     try:
         if data.what_to_sell:
-            for image in data.images:
-                img_name = str(uuid.uuid4())[:10] + '.png'
-                image_as_bytes = str.encode(image) 
-                img_recovered = base64.b64decode(image_as_bytes)
-                
-                with open("server/media/image/uploaded_" + img_name, "wb") as f:
-                    f.write(img_recovered)
-                    
-                upload_image = ProductImages(img=f"http://localhost:8000/media/image/uploaded_{img_name}")
-                image_obj.append(upload_image)
-                await upload_image.create()
+            if CONFIG_SETTINGS.USE_SPACES:
+                image_obj = await upload_image_to_S3_bucket(data.images,ProductImages)
+            else:
+                image_obj = await upload_image_to_file_path(data.images,ProductImages)
             
             product = Product(
                 what_to_sell=data.what_to_sell,
@@ -53,17 +83,11 @@ async def create_services(data:GoodsAndServiceEventSchema,Authorize: AuthJWT = D
     
     try:
         if data.what_to_do:
-            for image in data.images:
-                img_name = str(uuid.uuid4())[:10] + '.png'
-                image_as_bytes = str.encode(image) 
-                img_recovered = base64.b64decode(image_as_bytes)
-                
-                with open("server/media/image/uploaded_" + img_name, "wb") as f:
-                    f.write(img_recovered)
-                    
-                upload_image = ServiceImages(img=f"http://localhost:8000/media/image/uploaded_{img_name}")
-                image_obj.append(upload_image)
-                await upload_image.create()
+            
+            if CONFIG_SETTINGS.USE_SPACES:
+                image_obj = await upload_image_to_S3_bucket(data.images,ServiceImages)
+            else:
+                image_obj = await upload_image_to_file_path(data.images,ServiceImages)
             
             service = Service(
                 what_to_do=data.what_to_do,
@@ -86,17 +110,11 @@ async def create_services(data:GoodsAndServiceEventSchema,Authorize: AuthJWT = D
     
     try:
         if data.what_is_it_about:
-            for image in data.images:
-                img_name = str(uuid.uuid4())[:10] + '.png'
-                image_as_bytes = str.encode(image) 
-                img_recovered = base64.b64decode(image_as_bytes)
-                
-                with open("server/media/image/uploaded_" + img_name, "wb") as f:
-                    f.write(img_recovered)
-                    
-                upload_image = EventImages(img=f"http://localhost:8000/media/image/uploaded_{img_name}")
-                image_obj.append(upload_image)
-                await upload_image.create()
+            
+            if CONFIG_SETTINGS.USE_SPACES:
+                image_obj = await upload_image_to_S3_bucket(data.images,EventImages)
+            else:
+                image_obj = await upload_image_to_file_path(data.images,EventImages)
             
             event = Event(
                 what_is_it_about=data.what_is_it_about,
