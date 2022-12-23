@@ -9,25 +9,25 @@ from enum import Enum
      
         
 class CategoryChoices(str,Enum):
-    FOOD_AND_DRINKS = "FD"
-    GRAPHIC_DESIGN = "GD"
-    RECREATIONAL_AND_FUN_FAIR = 'RFF'
+    FOOD_AND_DRINKS = "FOOD_AND_DRINKS"
+    GRAPHIC_DESIGN = "GRAPHIC_DESIGN"
+    RECREATIONAL_AND_FUN_FAIR = 'RECREATIONAL_AND_FUN_FAIR'
     
     
 class EventServicesDeliveryChoices(str,Enum):
-    ONLINE = "ON"
-    OFFLINE = "OFF"
+    ONLINE = "ONLINE"
+    OFFLINE = "OFFLINE"
 
 
 class DeliveryCategoryChoices(str,Enum):
-    INTER_STATE = "IS"
-    WITHIN_STATE = "WS"
+    INTER_STATE = "INTER_STATE"
+    WITHIN_STATE = "WITHIN_STATE"
     
     
 class DeliveryChoices(str,Enum):
-    MOTOR_CYCLE = "MC"
-    MINI_VAN = "MV"
-    TRUCK = "TR"
+    MOTOR_CYCLE = "MOTOR_CYCLE"
+    MINI_VAN = "MINI_VAN"
+    TRUCK = "TRUCK"
     
 
 
@@ -59,6 +59,8 @@ class CommonBase(Document):
     price:int
     description:str
     tags:str
+    average_ratings:Optional[int]=0
+    total_reviews:Optional[int]=0
     owner_id: PydanticObjectId
     
     class Settings:
@@ -105,6 +107,8 @@ class Delivery(Document):
     delivery_type:DeliveryChoices
     size:str
     select_category:DeliveryChoices
+    average_ratings:Optional[int]=0
+    total_reviews:Optional[int]=0
     owner_id: PydanticObjectId
     
     class Settings:
