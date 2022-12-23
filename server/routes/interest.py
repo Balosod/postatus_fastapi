@@ -6,7 +6,7 @@ from server.models.interest import Interest
 
 router = APIRouter()
 
-@router.post("/")
+@router.post("/add")
 async def create_interest(interest:Interest) -> dict:
     
     await interest.create()
@@ -14,7 +14,7 @@ async def create_interest(interest:Interest) -> dict:
     return {"message":f"{interest.interest} successfully added to interest list"}
 
 
-@router.get("/")
+@router.get("/all")
 async def get_interest() -> dict:
     all_interest = await Interest.find().to_list()
 
