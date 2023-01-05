@@ -8,10 +8,12 @@ from ..utils.helpers import EmailManager
 from ..utils import auth_service
 import base64
 import uuid
+import re
 from ..utils.s3_storage import client
 from ..settings import CONFIG_SETTINGS
 from server.models.order_history import Order
 from ..utils.location_manager import get_location
+
 
 # from auth.auth_handler import signJWT
 from fastapi_jwt_auth import AuthJWT
@@ -39,6 +41,14 @@ router = APIRouter()
 @router.post("/signup/{latitude}/{longitude}", response_description="User added to the database")
 async def create_account(user: UserCreation,latitude:float,longitude:float) -> dict:
     user_interest=[]
+    email_regex = r'com$'
+    match = re.search(email_regex, user.email)
+    if not match:
+        return HTTPException(
+            status_code=400,
+            detail="Email is invalid"
+        )
+        
     user_exists = await User.find_one(User.email == user.email)
 
     if user_exists:
@@ -83,9 +93,7 @@ async def create_account(user: UserCreation,latitude:float,longitude:float) -> d
 
 @router.post("/auth/login", response_description="User login")
 async def login_user(user: UserLogin, Authorize: AuthJWT = Depends()):
-    print("called")
     user_acct = await User.find_one(User.email == user.email)
-    print(user)
     try:
         if user_acct and user_acct.active and pwd_context.verify(user.password, user_acct.password):
             access_token = Authorize.create_access_token(subject=user.email)
