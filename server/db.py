@@ -9,7 +9,7 @@ from server.models.services import (
     CommonBase, Product,
     Service, Event, Delivery, 
     ProductImages, ServiceImages, 
-    EventImages)
+    EventImages,DeliveryImages)
 
 # from server.models.review import ProductReview
 
@@ -22,6 +22,6 @@ async def init_db():
 
     await init_beanie(database=db_name, document_models=[User,CommonBase,Product, Service,
                                                          Event, Delivery, ProductImages,
-                                                         ServiceImages, EventImages,Interest,
-                                                         Order,Feedback])
+                                                         ServiceImages, EventImages,DeliveryImages,
+                                                         Interest,Order,Feedback])
 

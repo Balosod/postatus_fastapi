@@ -50,6 +50,12 @@ class EventImages(Document):
     class Settings:
         name = "events_image"
         
+class DeliveryImages(Document):
+    img:str
+    
+    class Settings:
+        name = "deliverys_image"
+        
         
         
          
@@ -110,6 +116,7 @@ class Delivery(Document):
     average_ratings:Optional[int]=0
     total_reviews:Optional[int]=0
     owner_id: PydanticObjectId
+    image: List[Link[DeliveryImages]]
     
     class Settings:
         name = "deliverys"
@@ -149,6 +156,7 @@ class DeliverySchema(BaseModel):
     delivery_type:Optional[DeliveryChoices] = None
     size: Optional[str] = None
     select_category:Optional[DeliveryChoices] = None
+    images:Optional[list] = None
     
     
     

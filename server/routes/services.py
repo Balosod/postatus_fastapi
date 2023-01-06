@@ -7,7 +7,7 @@ from ..utils.s3_storage import client
 from ..settings import CONFIG_SETTINGS
 from server.models.services import (Product, Service, Event, 
                                     Delivery, ProductImages,
-                                    ServiceImages, EventImages, 
+                                    ServiceImages, EventImages,DeliveryImages,
                                     GoodsAndServiceEventSchema,DeliverySchema)
 
 
@@ -146,6 +146,12 @@ async def create_delivery(data:DeliverySchema,Authorize: AuthJWT = Depends()) ->
     current_user = Authorize.get_jwt_subject()
     
     user = await User.find_one(User.email == current_user)
+    
+    if CONFIG_SETTINGS.USE_SPACES:
+        image_obj = await upload_image_to_S3_bucket(data.images,DeliveryImages)
+    else:
+        image_obj = await upload_image_to_file_path(data.images,DeliveryImages)
+                
     delivery = Delivery(
         pick_up_location=data.pick_up_location,
         delivery_location=data.delivery_location,
@@ -156,6 +162,7 @@ async def create_delivery(data:DeliverySchema,Authorize: AuthJWT = Depends()) ->
         price=data.price,
         description=data.description,
         tags=data.tags,
+        image=image_obj,
         owner_id=user.id
         )
     
