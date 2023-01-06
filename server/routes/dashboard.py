@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,status,Response
 from fastapi_jwt_auth import AuthJWT
 from server.models.user import User
 from server.models.services import (Product, Service, Event, Delivery)
@@ -41,7 +41,7 @@ async def get_total_product(ID):
     
     return {"total_sales":total_sales,"total_products":total_products,"product":product,"service":service,"event":event,"delivery":delivery}
 
-@router.get("/all")
+@router.get("/all",status_code = 200)
 async def dashboard(Authorize: AuthJWT = Depends()) -> dict:
     Authorize.jwt_required()
     current_user = Authorize.get_jwt_subject()
@@ -53,7 +53,7 @@ async def dashboard(Authorize: AuthJWT = Depends()) -> dict:
     
 
 
-@router.get("/tag/{tag}")
+@router.get("/tag/{tag}",status_code = 200)
 async def dashboard_by_tag(tag:str,Authorize: AuthJWT = Depends()) -> dict:
     #product = await Product.find(Or(RegEx(Product.location, pattern,"i"),(Product.price == 500)),fetch_links=True).to_list()
     

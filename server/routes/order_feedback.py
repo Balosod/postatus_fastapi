@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, status
 from fastapi_jwt_auth import AuthJWT
 from beanie import PydanticObjectId
 from beanie.operators import And
@@ -76,8 +76,8 @@ async def update_rivew(itemID,reviews_total):
     else:
         return None
     
-@router.post("/{itemID}")
-async def create_ratings_and_reviews(data :FeedbackSchema,itemID:PydanticObjectId,Authorize: AuthJWT = Depends()) -> dict:
+@router.post("/{itemID}",status_code = 201)
+async def create_ratings_and_reviews(data :FeedbackSchema,itemID:PydanticObjectId,response:Response, Authorize: AuthJWT = Depends()) -> dict:
     Authorize.jwt_required()
     current_user = Authorize.get_jwt_subject()
     
@@ -110,6 +110,8 @@ async def create_ratings_and_reviews(data :FeedbackSchema,itemID:PydanticObjectI
            
             return {"message":"Feedback created"}
         else:
+            response.status_code = 400
             return {"message":"You haven't order this product/services/event"}
     else:
+        response.status_code = 400
         return {"message":"Product/Service/Event doesn't exit any more"}

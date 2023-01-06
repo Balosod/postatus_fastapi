@@ -1,5 +1,5 @@
 from beanie import PydanticObjectId
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends,status,Response
 from passlib.context import CryptContext
 from pydantic import  EmailStr, Field
 from typing import List
@@ -38,12 +38,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 router = APIRouter()
 
 
-@router.post("/signup/{latitude}/{longitude}", response_description="User added to the database")
-async def create_account(user: UserCreation,latitude:float,longitude:float) -> dict:
+@router.post("/signup/{latitude}/{longitude}", response_description="User added to the database",status_code=201)
+async def create_account(user: UserCreation,latitude:float,longitude:float,response: Response) -> dict:
     user_interest=[]
     email_regex = r'com$'
     match = re.search(email_regex, user.email)
     if not match:
+        response.status_code = 400
         return HTTPException(
             status_code=400,
             detail="Email is invalid"
@@ -52,6 +53,7 @@ async def create_account(user: UserCreation,latitude:float,longitude:float) -> d
     user_exists = await User.find_one(User.email == user.email)
 
     if user_exists:
+        response.status_code = 400
         return HTTPException(
             status_code=400,
             detail="Email already exists!"
@@ -91,21 +93,23 @@ async def create_account(user: UserCreation,latitude:float,longitude:float) -> d
 
 
 
-@router.post("/auth/login", response_description="User login")
-async def login_user(user: UserLogin, Authorize: AuthJWT = Depends()):
+@router.post("/auth/login", response_description="User login",status_code = 201)
+async def login_user(user: UserLogin, response:Response, Authorize: AuthJWT = Depends()):
     user_acct = await User.find_one(User.email == user.email)
     try:
         if user_acct and user_acct.active and pwd_context.verify(user.password, user_acct.password):
             access_token = Authorize.create_access_token(subject=user.email)
             refresh_token = Authorize.create_refresh_token(subject=user.email)
             return {"access_token": access_token, "refresh_token": refresh_token}
+        response.status_code = 400
         return HTTPException(
-                status_code=300,
+                status_code=400,
                 detail="User with that email doesn't exist!"
             )
     except:
+        response.status_code = 400
         return HTTPException(
-                status_code=300,
+                status_code=400,
                 detail="User with that email doesn't exist!"
             )
 
@@ -119,14 +123,14 @@ def get_new_access_token(Authorize: AuthJWT = Depends()):
     return {"access_token": new_access_token}
 
 
-@router.post("/auth/verify", response_description="verify otp")
+@router.post("/auth/verify", response_description="verify otp", status_code = 200)
 async def verify_otp(data: OtpSchema):
     
     obj = await auth_service.verify_OTP(data.email,data.otp)
     return {"message":obj}
 
 
-@router.post("/auth/resend", response_description="resend otp")
+@router.post("/auth/resend", response_description="resend otp",status_code = 200)
 async def resend_otp(data:EmailSchema):
 
     obj = await auth_service.resend_OTP(data.email)

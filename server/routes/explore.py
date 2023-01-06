@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,Response,status
 from fastapi_jwt_auth import AuthJWT
 from server.models.services import (Product, Service, Event, Delivery)
 from beanie.operators import RegEx,And,Or
 from ..utils.location_manager import get_location
 router = APIRouter()
 
-@router.get("/all")
+@router.get("/all",status_code =200)
 async def get_all_explore(Authorize: AuthJWT = Depends()) -> dict:
     
     Authorize.jwt_required()
@@ -18,7 +18,7 @@ async def get_all_explore(Authorize: AuthJWT = Depends()) -> dict:
     return {"product":product,"service":service,"event":event,"delivery":delivery}
 
 
-@router.get("/lat-long/{latitude}/{longitude}")
+@router.get("/lat-long/{latitude}/{longitude}",status_code =200)
 async def explore_by_coordinate(latitude:float,longitude:float, Authorize: AuthJWT = Depends()) -> dict:
     
     Authorize.jwt_required()
@@ -40,7 +40,7 @@ async def explore_by_coordinate(latitude:float,longitude:float, Authorize: AuthJ
 
 
 
-@router.get("/tag-loc/{tag}/{location}")
+@router.get("/tag-loc/{tag}/{location}",status_code =200)
 async def explore_by_tag_and_location(tag:str,location:str, Authorize: AuthJWT = Depends()) -> dict:
     
     Authorize.jwt_required()

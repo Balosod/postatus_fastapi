@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, status
 from fastapi_jwt_auth import AuthJWT
 from beanie import PydanticObjectId
 from server.models.order_history import Order
@@ -27,8 +27,8 @@ async def get_ID(itemID):
         return None
     
 
-@router.get("/{itemID}")
-async def create_order(itemID:PydanticObjectId,Authorize: AuthJWT = Depends()) -> dict:
+@router.get("/{itemID}", status_code = 200)
+async def create_order(itemID:PydanticObjectId,response:Response, Authorize: AuthJWT = Depends()) -> dict:
     Authorize.jwt_required()
     current_user = Authorize.get_jwt_subject()
     
@@ -47,6 +47,10 @@ async def create_order(itemID:PydanticObjectId,Authorize: AuthJWT = Depends()) -
         await user.save()
         return {"message":"Order successfully added"}
     else:
-        return {"message":"Product/Service/Event doesn't exit any more"}
+        response.status_code = 400
+        return HTTPException(
+            status_code=400,
+            detail="Product/Service/Event doesn't exit any more"
+        )
     
     

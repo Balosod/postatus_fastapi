@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,status, Response
 from fastapi_jwt_auth import AuthJWT
 from beanie import PydanticObjectId
 from server.models.user import User
@@ -38,7 +38,7 @@ async def get_user(ID):
     user = await User.get(ID) 
     return user
 
-@router.get("/{ID}")
+@router.get("/{ID}",status_code = 200)
 async def detail(ID:PydanticObjectId, Authorize: AuthJWT = Depends()) -> dict:
     
     Authorize.jwt_required()

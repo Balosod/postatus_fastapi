@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,Response, status
 from fastapi_jwt_auth import AuthJWT
 from server.models.interest import Interest
 
@@ -6,7 +6,7 @@ from server.models.interest import Interest
 
 router = APIRouter()
 
-@router.post("/add")
+@router.post("/add", status_code = 201)
 async def create_interest(interest:Interest) -> dict:
     
     await interest.create()
@@ -14,7 +14,7 @@ async def create_interest(interest:Interest) -> dict:
     return {"message":f"{interest.interest} successfully added to interest list"}
 
 
-@router.get("/all")
+@router.get("/all",status_code =200)
 async def get_interest() -> dict:
     all_interest = await Interest.find().to_list()
 

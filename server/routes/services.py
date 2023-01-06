@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,status,Response
 from fastapi_jwt_auth import AuthJWT
 from server.models.user import User
 import base64
@@ -50,8 +50,8 @@ async def upload_image_to_S3_bucket(images,model_name):
         await upload_image.create()
     return image_obj_list
 
-@router.post("/services")
-async def create_services(data:GoodsAndServiceEventSchema,Authorize: AuthJWT = Depends()) -> dict:
+@router.post("/services",status_code=201)
+async def create_services(data:GoodsAndServiceEventSchema,response:Response,Authorize: AuthJWT = Depends()) -> dict:
     Authorize.jwt_required()
     current_user = Authorize.get_jwt_subject()
     
@@ -134,13 +134,13 @@ async def create_services(data:GoodsAndServiceEventSchema,Authorize: AuthJWT = D
             return {"message":"event successfully uploaded"}
     except:
         pass
-    
+    response.status_code = 400
     return {"message":"Something went wrong"}
 
 
 
 
-@router.post("/delivery")
+@router.post("/delivery",status_code=201)
 async def create_delivery(data:DeliverySchema,Authorize: AuthJWT = Depends()) -> dict:
     Authorize.jwt_required()
     current_user = Authorize.get_jwt_subject()
