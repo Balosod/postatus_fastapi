@@ -161,7 +161,7 @@ async def upload_profile_image(data:ImageSchema, Authorize: AuthJWT = Depends())
             user.img = img_url
             await user.save()
             
-            return{"message":"image successfully uploaded"}
+            return{"message":"image successfully uploaded."}
         else:
             img_name = str(uuid.uuid4())[:10] + '.png'
             image_as_bytes = str.encode(data.image) 
