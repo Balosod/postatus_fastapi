@@ -16,14 +16,14 @@ async def get_all_explore(Authorize: AuthJWT = Depends()) -> dict:
     event = await Event.find(fetch_links=True).to_list()
     delivery = await Delivery.find(fetch_links=True).to_list()
     
-    all_service_list = []
-    all_service_list.extend(product)
-    all_service_list.extend(service)
-    all_service_list.extend(event)
-    all_service_list.extend(delivery)
+    all_explore = []
+    all_explore.extend(product)
+    all_explore.extend(service)
+    all_explore.extend(event)
+    all_explore.extend(delivery)
     
     
-    return all_service_list
+    return all_explore
     
 
 
