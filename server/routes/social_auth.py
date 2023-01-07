@@ -6,11 +6,12 @@ from server.models.user import User,ErrorResponseModel
 from fastapi_jwt_auth import AuthJWT
 from ..settings import CONFIG_SETTINGS
 
-
+#https://postatusbackend.getrapidmvp.com/
+#http://127.0.0.1:8000/
 router = APIRouter()
 
-google_sso = GoogleSSO(CONFIG_SETTINGS.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY, CONFIG_SETTINGS.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET, "http://127.0.0.1:8000/social/auth/google/callback",use_state=False)
-facebook_sso = FacebookSSO(CONFIG_SETTINGS.SOCIAL_AUTH_FACEBOOK_KEY, CONFIG_SETTINGS.SOCIAL_AUTH_FACEBOOK_SECRET , "http://localhost:8000/social/auth/facebook/callback",use_state=False)
+google_sso = GoogleSSO(CONFIG_SETTINGS.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY, CONFIG_SETTINGS.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET, "https://postatusbackend.getrapidmvp.com/social/auth/google/callback",use_state=False)
+facebook_sso = FacebookSSO(CONFIG_SETTINGS.SOCIAL_AUTH_FACEBOOK_KEY, CONFIG_SETTINGS.SOCIAL_AUTH_FACEBOOK_SECRET , "https://postatusbackend.getrapidmvp.com/social/auth/facebook/callback",use_state=False)
 
 @router.get("/auth/google/login")
 async def google_login():
