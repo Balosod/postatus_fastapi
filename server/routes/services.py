@@ -70,7 +70,7 @@ async def create_services(data:GoodsAndServiceEventSchema,response:Response,Auth
                 location=data.location,
                 price=data.price,
                 description=data.description,
-                tags=data.tags,
+                # tags=data.tags,
                 image=image_obj,
                 owner_id=user.id
                 )
@@ -97,7 +97,7 @@ async def create_services(data:GoodsAndServiceEventSchema,response:Response,Auth
                 location=data.location,
                 price=data.price,
                 description=data.description,
-                tags=data.tags,
+                # tags=data.tags,
                 image=image_obj,
                 owner_id=user.id
                 )
@@ -124,7 +124,7 @@ async def create_services(data:GoodsAndServiceEventSchema,response:Response,Auth
                 location=data.location,
                 price=data.price,
                 description=data.description,
-                tags=data.tags,
+                # tags=data.tags,
                 image=image_obj,
                 owner_id=user.id
                 )
@@ -161,7 +161,7 @@ async def create_delivery(data:DeliverySchema,response:Response, Authorize: Auth
             select_category=data.select_category,
             price=data.price,
             description=data.description,
-            tags=data.tags,
+            # tags=data.tags,
             image=image_obj,
             owner_id=user.id
             )

@@ -64,7 +64,7 @@ class CommonBase(Document):
     location:str
     price:int
     description:str
-    tags:str
+    # tags:str
     average_ratings:Optional[int]=0
     total_reviews:Optional[int]=0
     owner_id: PydanticObjectId
@@ -106,7 +106,7 @@ class Event(CommonBase):
 class Delivery(Document):
     price:str
     description:str
-    tags:str
+    # tags:str
     pick_up_location: str
     delivery_location:str
     category:DeliveryCategoryChoices
@@ -128,7 +128,7 @@ class GoodsAndServiceEventSchema(BaseModel):
     location:Optional[str] = None
     price:Optional[int]=None
     description:Optional[str]=None
-    tags:Optional[str]=None
+    # tags:Optional[str]=None
     images:Optional[list] = None
     
     #Schema for Products
@@ -149,7 +149,7 @@ class GoodsAndServiceEventSchema(BaseModel):
 class DeliverySchema(BaseModel):
     price:Optional[int]=None
     description:Optional[str]=None
-    tags:Optional[str]=None
+    # tags:Optional[str]=None
     pick_up_location: Optional[str] = None
     delivery_location:Optional[str] = None
     category:Optional[DeliveryCategoryChoices] = None
@@ -157,6 +157,12 @@ class DeliverySchema(BaseModel):
     size: Optional[str] = None
     select_category:Optional[DeliveryChoices] = None
     images:Optional[list] = None
+    
+    
+    
+    
+class ExploreSearch(BaseModel):
+    search:str
     
     
     

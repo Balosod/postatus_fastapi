@@ -53,19 +53,19 @@ async def dashboard(Authorize: AuthJWT = Depends()) -> dict:
     
 
 
-@router.get("/tag/{tag}",status_code = 200)
-async def dashboard_by_tag(tag:str,Authorize: AuthJWT = Depends()) -> dict:
+@router.get("/search/{search}",status_code = 200)
+async def dashboard_by_tag(search:str,Authorize: AuthJWT = Depends()) -> dict:
     #product = await Product.find(Or(RegEx(Product.location, pattern,"i"),(Product.price == 500)),fetch_links=True).to_list()
     
     Authorize.jwt_required()
     current_user = Authorize.get_jwt_subject()
     
     user = await User.find_one(User.email == current_user)
-    pattern = rf'{tag}' 
-    product = await Product.find(And(Or(RegEx(Product.tags, pattern,"i"),RegEx(Product.what_to_sell, pattern,"i")),(Product.owner_id == user.id)),fetch_links=True).to_list()
-    service = await Service.find(And(Or(RegEx(Service.tags, pattern,"i"),RegEx(Service.what_to_do, pattern,"i")),(Service.owner_id == user.id)),fetch_links=True).to_list()   
-    event = await Event.find(And(Or(RegEx(Event.tags, pattern,"i"),RegEx(Event.what_is_it_about, pattern,"i")),(Event.owner_id == user.id)),fetch_links=True).to_list()
-    delivery = await Delivery.find(And(RegEx(Delivery.tags, pattern,"i"),(Delivery.owner_id == user.id)),fetch_links=True).to_list()
+    pattern = rf'{search}' 
+    product = await Product.find(And(RegEx(Product.what_to_sell, pattern,"i"),(Product.owner_id == user.id)),fetch_links=True).to_list()
+    service = await Service.find(And(RegEx(Service.what_to_do, pattern,"i"),(Service.owner_id == user.id)),fetch_links=True).to_list()   
+    event = await Event.find(And(RegEx(Event.what_is_it_about, pattern,"i"),(Event.owner_id == user.id)),fetch_links=True).to_list()
+    delivery = await Delivery.find(And(RegEx(Delivery.pick_up_location, pattern,"i"),(Delivery.owner_id == user.id)),fetch_links=True).to_list()
           
     result = await get_total_product(user.id)
     total_product = result["total_products"]

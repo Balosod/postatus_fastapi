@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends,Response,status
 from fastapi_jwt_auth import AuthJWT
-from server.models.services import (Product, Service, Event, Delivery)
+from server.models.services import (Product, Service, Event, Delivery,ExploreSearch)
 from beanie.operators import RegEx,And,Or
 from ..utils.location_manager import get_location
 import json
@@ -28,39 +28,58 @@ async def get_all_explore(Authorize: AuthJWT = Depends()) -> dict:
 
 
 
-@router.get("/lat-long/{latitude}/{longitude}",status_code =200)
-async def explore_by_coordinate(latitude:float,longitude:float, Authorize: AuthJWT = Depends()) -> dict:
+# @router.get("/lat-long/{latitude}/{longitude}",status_code =200)
+# async def explore_by_coordinate(latitude:float,longitude:float, Authorize: AuthJWT = Depends()) -> dict:
     
-    Authorize.jwt_required()
+#     Authorize.jwt_required()
     
-    address = get_location(latitude,longitude)
-    try:
-        city = address["city"]
-        pattern = rf'.*{city}.*' 
-    except:
-        state = address["state"]
-        pattern = rf'.*{state}.*' 
+#     address = get_location(latitude,longitude)
+#     try:
+#         city = address["city"]
+#         pattern = rf'.*{city}.*' 
+#     except:
+#         state = address["state"]
+#         pattern = rf'.*{state}.*' 
          
-    product = await Product.find(RegEx(Product.location, pattern,"i"),fetch_links=True).to_list()
-    service = await Service.find(RegEx(Service.location, pattern,"i"),fetch_links=True).to_list()      
-    event = await Event.find(RegEx(Event.location, pattern,"i"),fetch_links=True).to_list()      
-    delivery = await Delivery.find(RegEx(Delivery.pick_up_location, pattern,"i"),fetch_links=True).to_list()    
+#     product = await Product.find(RegEx(Product.location, pattern,"i"),fetch_links=True).to_list()
+#     service = await Service.find(RegEx(Service.location, pattern,"i"),fetch_links=True).to_list()      
+#     event = await Event.find(RegEx(Event.location, pattern,"i"),fetch_links=True).to_list()      
+#     delivery = await Delivery.find(RegEx(Delivery.pick_up_location, pattern,"i"),fetch_links=True).to_list()    
               
-    return {"product":product,"service":service,"event":event,"delivery":delivery}
+#     return {"product":product,"service":service,"event":event,"delivery":delivery}
 
 
 
-@router.get("/tag-loc/{tag}/{location}",status_code =200)
-async def explore_by_tag_and_location(tag:str,location:str, Authorize: AuthJWT = Depends()) -> dict:
+@router.post("/search/{latitude}/{longitude}",status_code =200)
+async def explore_by_search_and_location(search_input:ExploreSearch, latitude:float,longitude:float, Authorize: AuthJWT = Depends()) -> dict:
     
     Authorize.jwt_required()
+   
+
+    search_pattern = rf'{search_input.search}'
     
-    tag_pattern = rf'{tag}'
-    location_pattern = rf'.*{location}.*' 
     
-    product = await Product.find(And(RegEx(Product.tags, tag_pattern,"i"),RegEx(Product.location, location_pattern,"i")),fetch_links=True).to_list()
-    service = await Service.find(And(RegEx(Service.tags, tag_pattern,"i"),RegEx(Service.location, location_pattern,"i")),fetch_links=True).to_list()      
-    event = await Event.find(And(RegEx(Event.tags, tag_pattern,"i"),RegEx(Event.location, location_pattern,"i")),fetch_links=True).to_list()      
-    delivery = await Delivery.find(And(RegEx(Delivery.tags, tag_pattern,"i"),RegEx(Delivery.pick_up_location, location_pattern,"i")),fetch_links=True).to_list()    
+    location = get_location(latitude,longitude)
+    if location:
+        try:
+            obj_location = f"{location['city']}"
+        except:
+           obj_location = f"{location['state']}"
+    else:
+        obj_location = ""
+        
+    location_pattern = rf'.*{obj_location}.*' 
+        
+    
+    product = await Product.find(And(RegEx(Product.what_to_sell, search_pattern,"i"),RegEx(Product.location, location_pattern,"i")),fetch_links=True).to_list()
+    service = await Service.find(And(RegEx(Service.what_to_do, search_pattern,"i"),RegEx(Service.location, location_pattern,"i")),fetch_links=True).to_list()      
+    event = await Event.find(And(RegEx(Event.what_is_it_about, search_pattern,"i"),RegEx(Event.location, location_pattern,"i")),fetch_links=True).to_list()      
+    delivery = await Delivery.find(And(RegEx(Delivery.pick_up_location, search_pattern,"i"),RegEx(Delivery.pick_up_location, location_pattern,"i")),fetch_links=True).to_list()  
+    
+    explore_by_search = []
+    explore_by_search.extend(product)
+    explore_by_search.extend(service)
+    explore_by_search.extend(event)
+    explore_by_search.extend(delivery)  
               
-    return {"product":product,"service":service,"event":event,"delivery":delivery}
+    return explore_by_search
