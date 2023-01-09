@@ -3,7 +3,12 @@ from fastapi.responses import JSONResponse
 from .db import init_db
 
 from server.routes.users import router as UserRouter
+
+from server.routes.product import router as ProductRouter
 from server.routes.services import router as ServicesRouter
+from server.routes.event import router as EventRouter
+from server.routes.delivery import router as DeliveryRouter
+
 from server.routes.explore_detail import router as exploreDetailRouter
 from server.routes.explore import router as exploreRouter
 from server.routes.interest import router as interestRouter
@@ -51,7 +56,13 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException):
 app.include_router(UserRouter, tags=["Users"], prefix="/users")
 app.include_router(socialRouter, tags=["social_auth"], prefix="/social")
 
-app.include_router(ServicesRouter, tags=["services"], prefix="/create")
+
+app.include_router(ProductRouter, tags=["product"], prefix="/create")
+app.include_router(ServicesRouter, tags=["service"], prefix="/create")
+app.include_router(EventRouter, tags=["event"], prefix="/create")
+app.include_router(DeliveryRouter, tags=["delivery"], prefix="/create")
+
+
 app.include_router(exploreRouter, tags=["explore"], prefix="/explore")
 app.include_router(exploreDetailRouter, tags=["explore_detail"], prefix="/explore-detail")
 app.include_router(interestRouter, tags=["interest"], prefix="/interest")

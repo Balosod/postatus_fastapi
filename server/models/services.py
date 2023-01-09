@@ -64,7 +64,7 @@ class CommonBase(Document):
     location:str
     price:int
     description:str
-    # tags:str
+    liked:bool = False
     average_ratings:Optional[int]=0
     total_reviews:Optional[int]=0
     owner_id: PydanticObjectId
@@ -74,8 +74,9 @@ class CommonBase(Document):
         
     
 class Product(CommonBase):
-    what_to_sell: str
+    title: str
     quantity:int
+    types:str = "product"
     image: List[Link[ProductImages]]
     
     class Settings:
@@ -83,9 +84,10 @@ class Product(CommonBase):
         
        
 class Service(CommonBase):
-    what_to_do: str
+    title: str
     delivery_type:EventServicesDeliveryChoices
     duration:str
+    types:str = "service"
     image: List[Link[ServiceImages]]
     
     class Settings:
@@ -93,9 +95,10 @@ class Service(CommonBase):
         
         
 class Event(CommonBase):
-    what_is_it_about: str
+    title: str
     medium:EventServicesDeliveryChoices
     date_and_time:str
+    types:str = "event"
     image: List[Link[EventImages]]
     
     class Settings:
@@ -104,9 +107,11 @@ class Event(CommonBase):
         
 
 class Delivery(Document):
+    title: str
     price:str
     description:str
-    # tags:str
+    liked:bool = False
+    types:str = "delivery"
     pick_up_location: str
     delivery_location:str
     category:DeliveryCategoryChoices
@@ -121,35 +126,42 @@ class Delivery(Document):
     class Settings:
         name = "deliverys"
         
-        
-class GoodsAndServiceEventSchema(BaseModel):
-    #Common Schema
-    category:Optional[CategoryChoices] = None
-    location:Optional[str] = None
-    price:Optional[int]=None
-    description:Optional[str]=None
-    # tags:Optional[str]=None
-    images:Optional[list] = None
+
     
-    #Schema for Products
-    what_to_sell: Optional[str] = None
-    quantity:Optional[int] = None
+class ProductSchema(BaseModel):
+    title: str
+    quantity:int
+    category:CategoryChoices
+    location:str
+    price:int
+    description:str
+    images:list
     
-    #Schema for Services
-    what_to_do: Optional[str] = None
-    delivery_type:Optional[EventServicesDeliveryChoices] = None
-    duration:Optional[str] = None
+class ServiceSchema(BaseModel):
+    title: str
+    delivery_type:EventServicesDeliveryChoices
+    duration:str
+    category:CategoryChoices
+    location:str
+    price:int
+    description:str
+    images:list
     
-    #Schema for Event
-    what_is_it_about: Optional[str] = None
-    medium:Optional[EventServicesDeliveryChoices] = None
-    date_and_time:Optional[str] = None
+class EventSchema(BaseModel):
+    title: str
+    medium:EventServicesDeliveryChoices
+    date_and_time:str
+    category:CategoryChoices
+    location:str
+    price:int
+    description:str
+    images:list
     
-    
+   
 class DeliverySchema(BaseModel):
+    title: str
     price:Optional[int]=None
     description:Optional[str]=None
-    # tags:Optional[str]=None
     pick_up_location: Optional[str] = None
     delivery_location:Optional[str] = None
     category:Optional[DeliveryCategoryChoices] = None

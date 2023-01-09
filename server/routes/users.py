@@ -104,13 +104,13 @@ async def login_user(user: UserLogin, response:Response, Authorize: AuthJWT = De
         response.status_code = 400
         return HTTPException(
                 status_code=400,
-                detail="User with that email doesn't exist!"
+                detail="User with that email doesn't exist or password incorrect"
             )
     except:
         response.status_code = 400
         return HTTPException(
                 status_code=400,
-                detail="User with that email doesn't exist!"
+                detail="User with that email doesn't exist or password incorrect"
             )
 
 

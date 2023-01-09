@@ -52,7 +52,7 @@ async def get_all_explore(Authorize: AuthJWT = Depends()) -> dict:
 
 @router.post("/search/{latitude}/{longitude}",status_code =200)
 async def explore_by_search_and_location(search_input:ExploreSearch, latitude:float,longitude:float, Authorize: AuthJWT = Depends()) -> dict:
-    
+    print("yes")
     Authorize.jwt_required()
    
 
@@ -60,6 +60,7 @@ async def explore_by_search_and_location(search_input:ExploreSearch, latitude:fl
     
     
     location = get_location(latitude,longitude)
+    print(location)
     if location:
         try:
             obj_location = f"{location['city']}"
@@ -68,13 +69,15 @@ async def explore_by_search_and_location(search_input:ExploreSearch, latitude:fl
     else:
         obj_location = ""
         
+    print(obj_location)
+        
     location_pattern = rf'.*{obj_location}.*' 
         
     
-    product = await Product.find(And(RegEx(Product.what_to_sell, search_pattern,"i"),RegEx(Product.location, location_pattern,"i")),fetch_links=True).to_list()
-    service = await Service.find(And(RegEx(Service.what_to_do, search_pattern,"i"),RegEx(Service.location, location_pattern,"i")),fetch_links=True).to_list()      
-    event = await Event.find(And(RegEx(Event.what_is_it_about, search_pattern,"i"),RegEx(Event.location, location_pattern,"i")),fetch_links=True).to_list()      
-    delivery = await Delivery.find(And(RegEx(Delivery.pick_up_location, search_pattern,"i"),RegEx(Delivery.pick_up_location, location_pattern,"i")),fetch_links=True).to_list()  
+    product = await Product.find(And(RegEx(Product.title, search_pattern,"i"),RegEx(Product.location, location_pattern,"i")),fetch_links=True).to_list()
+    service = await Service.find(And(RegEx(Service.title, search_pattern,"i"),RegEx(Service.location, location_pattern,"i")),fetch_links=True).to_list()      
+    event = await Event.find(And(RegEx(Event.title, search_pattern,"i"),RegEx(Event.location, location_pattern,"i")),fetch_links=True).to_list()      
+    delivery = await Delivery.find(And(RegEx(Delivery.title, search_pattern,"i"),RegEx(Delivery.pick_up_location, location_pattern,"i")),fetch_links=True).to_list()  
     
     explore_by_search = []
     explore_by_search.extend(product)

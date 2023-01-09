@@ -49,37 +49,37 @@ async def google_callback(request: Request,Authorize: AuthJWT = Depends()):
         return ErrorResponseModel("Timeout Error", 401, "Timeout Error" )
     
     
-@router.get("/auth/facebook/login")
-async def facebook_login():
-    return await facebook_sso.get_login_redirect()
+# @router.get("/auth/facebook/login")
+# async def facebook_login():
+#     return await facebook_sso.get_login_redirect()
 
 
-@router.get("/auth/facebook/callback")
-async def facebook_callback(request: Request,Authorize: AuthJWT = Depends()):
-    """Process login response from facebook and return user info"""
-    try:
-        user = await facebook_sso.verify_and_process(request)
-        print(user)
-        if user is None:
-            raise HTTPException(401, "Failed to fetch user information")
-        user_exists = await User.find_one(User.email == user.email)
-        if user_exists:
-            access_token = Authorize.create_access_token(subject=user.email)
-            refresh_token = Authorize.create_refresh_token(subject=user.email)
-            return {"access_token": access_token, "refresh_token": refresh_token}
-        else:
-            user_obj = User(
-            email=user.email,
-            firstname = user.first_name,
-            lastname = user.last_name,
-            password=user.email,
-            interest=[],
-            provider=user.provider,
-            active = True
-            )
-            await user_obj.create() 
-            access_token = Authorize.create_access_token(subject=user.email)
-            refresh_token = Authorize.create_refresh_token(subject=user.email)
-            return {"access_token": access_token, "refresh_token": refresh_token}
-    except:
-        return ErrorResponseModel("Timeout Error", 401, "Timeout Error" )
+# @router.get("/auth/facebook/callback")
+# async def facebook_callback(request: Request,Authorize: AuthJWT = Depends()):
+#     """Process login response from facebook and return user info"""
+#     try:
+#         user = await facebook_sso.verify_and_process(request)
+#         print(user)
+#         if user is None:
+#             raise HTTPException(401, "Failed to fetch user information")
+#         user_exists = await User.find_one(User.email == user.email)
+#         if user_exists:
+#             access_token = Authorize.create_access_token(subject=user.email)
+#             refresh_token = Authorize.create_refresh_token(subject=user.email)
+#             return {"access_token": access_token, "refresh_token": refresh_token}
+#         else:
+#             user_obj = User(
+#             email=user.email,
+#             firstname = user.first_name,
+#             lastname = user.last_name,
+#             password=user.email,
+#             interest=[],
+#             provider=user.provider,
+#             active = True
+#             )
+#             await user_obj.create() 
+#             access_token = Authorize.create_access_token(subject=user.email)
+#             refresh_token = Authorize.create_refresh_token(subject=user.email)
+#             return {"access_token": access_token, "refresh_token": refresh_token}
+#     except:
+#         return ErrorResponseModel("Timeout Error", 401, "Timeout Error" )
