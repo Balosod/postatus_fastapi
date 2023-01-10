@@ -64,7 +64,7 @@ class CommonBase(Document):
     location:str
     price:int
     description:str
-    liked:bool = False
+    liked:Optional[bool] = False
     average_ratings:Optional[int]=0
     total_reviews:Optional[int]=0
     owner_id: PydanticObjectId
@@ -74,9 +74,9 @@ class CommonBase(Document):
         
     
 class Product(CommonBase):
-    title: str
+    title:Optional[str] = None
     quantity:int
-    types:str = "product"
+    types:Optional[str] = "product"
     image: List[Link[ProductImages]]
     
     class Settings:
@@ -84,10 +84,10 @@ class Product(CommonBase):
         
        
 class Service(CommonBase):
-    title: str
+    title:Optional[str] = None
     delivery_type:EventServicesDeliveryChoices
     duration:str
-    types:str = "service"
+    types:Optional[str] = "service"
     image: List[Link[ServiceImages]]
     
     class Settings:
@@ -95,10 +95,10 @@ class Service(CommonBase):
         
         
 class Event(CommonBase):
-    title: str
+    title:Optional[str] = None
     medium:EventServicesDeliveryChoices
     date_and_time:str
-    types:str = "event"
+    types:Optional[str] = "event"
     image: List[Link[EventImages]]
     
     class Settings:
@@ -107,11 +107,11 @@ class Event(CommonBase):
         
 
 class Delivery(Document):
-    title: str
+    title:Optional[str] = None
     price:str
     description:str
-    liked:bool = False
-    types:str = "delivery"
+    liked:Optional[bool] = False
+    types:Optional[str] = "delivery"
     pick_up_location: str
     delivery_location:str
     category:DeliveryCategoryChoices
