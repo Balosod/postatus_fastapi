@@ -11,6 +11,7 @@ router = APIRouter()
 async def get_total_product(ID):
     
     total_sales = 0
+    dashboard_items = []
     product = await Product.find(Product.owner_id == ID, fetch_links=True).to_list()
     service = await Service.find(Service.owner_id == ID, fetch_links=True).to_list()
     event = await Event.find(Event.owner_id == ID, fetch_links=True).to_list()
@@ -39,7 +40,14 @@ async def get_total_product(ID):
     total_products+=len(event)
     total_products+=len(delivery)
     
-    return {"total_sales":total_sales,"total_products":total_products,"product":product,"service":service,"event":event,"delivery":delivery}
+    dashboard_items.append({"total_products":total_products,"total_sales":total_sales})
+    dashboard_items.extend(product)
+    dashboard_items.extend(service)
+    dashboard_items.extend(event)
+    dashboard_items.extend(delivery)
+    
+    return dashboard_items
+    
 
 @router.get("/all",status_code = 200)
 async def dashboard(Authorize: AuthJWT = Depends()) -> dict:
@@ -60,6 +68,8 @@ async def dashboard_by_search(search:str,Authorize: AuthJWT = Depends()) -> dict
     Authorize.jwt_required()
     current_user = Authorize.get_jwt_subject()
     
+    
+    dashboard_items = []
     user = await User.find_one(User.email == current_user)
     pattern = rf'{search}' 
     product = await Product.find(And(RegEx(Product.title, pattern,"i"),(Product.owner_id == user.id)),fetch_links=True).to_list()
@@ -68,7 +78,12 @@ async def dashboard_by_search(search:str,Authorize: AuthJWT = Depends()) -> dict
     delivery = await Delivery.find(And(RegEx(Delivery.title, pattern,"i"),(Delivery.owner_id == user.id)),fetch_links=True).to_list()
           
     result = await get_total_product(user.id)
-    total_product = result["total_products"]
-    total_sales = result["total_sales"]
+    
+    dashboard_items.append(result[0])
+    dashboard_items.extend(product)
+    dashboard_items.extend(service)
+    dashboard_items.extend(event)
+    dashboard_items.extend(delivery)
+    
+    return dashboard_items
         
-    return {"total_sales":total_sales,"total_products":total_product, "product":product,"service":service,"event":event,"delivery":delivery}

@@ -4,6 +4,8 @@ from beanie import PydanticObjectId
 from server.models.user import User
 from beanie.operators import RegEx,And,Or,In
 from server.models.services import (Product, Service, Event, Delivery)
+import json
+from pydantic import BaseModel
 
 
 #Authorize: AuthJWT = Depends()
@@ -34,9 +36,13 @@ async def get_similar_item(name,ID):
         return delivery
     else:
         return None
-   
+
+class ProductShortView(BaseModel):
+    firstname: str
+    lastname: str
+ 
 async def get_user(ID):
-    user = await User.get(ID) 
+    user = await User.get(ID)
     return user
 
 @router.get("/{ID}",status_code = 200)
@@ -47,48 +53,48 @@ async def detail(ID:PydanticObjectId, Authorize: AuthJWT = Depends()) -> dict:
     context = {}
     product = await Product.find_one(Product.id==ID, fetch_links=True)
     if product:
-        context["product"] = product
+        context["detail"] = product
         searching_name = product.title
         product_id = product.id
         user_data = await get_user(product.owner_id)
-        context["organizer's info"] = user_data
+        context["organizer's_info"] = user_data
         item = await get_similar_item(searching_name,product_id)
         if item:
-            context["similar_product"] = item
+            context["similar_detail"] = item
     
         
     service = await Service.find_one(Service.id==ID, fetch_links=True)
     if service:
-        context["service"] = service
+        context["detail"] = service
         searching_name = service.title
         service_id = service.id
         user_data = await get_user(service.owner_id)
-        context["organizer's info"] = user_data
+        context["organizer's_info"] = user_data
         item = await get_similar_item(searching_name,service_id)
         if item:
-            context["similar_service"] = item
+            context["similar_detail"] = item
         
     event = await Event.find_one(Event.id==ID, fetch_links=True)
     if event:
-        context["event"] = event
+        context["detail"] = event
         searching_name = event.title
         event_id = event.id
         user_data = await get_user(event.owner_id)
-        context["organizer's info"] = user_data
+        context["organizer's_info"] = user_data
         item = await get_similar_item(searching_name,event_id)
         if item:
-            context["similar_event"] = item
+            context["similar_detail"] = item
     
         
     delivery = await Delivery.find_one(Delivery.id==ID, fetch_links=True)
     if delivery:
-        context["delivery"] = delivery
+        context["detail"] = delivery
         searching_name = delivery.title
         delivery_id = delivery.id
         user_data = await get_user(delivery.owner_id)
-        context["organizer's info"] = user_data
+        context["organizer's_info"] = user_data
         item = await get_similar_item(searching_name,delivery_id)
         if item:
-            context["similar_delivery"] = item
+            context["similar_detail"] = item
         
     return context

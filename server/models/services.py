@@ -12,6 +12,10 @@ class CategoryChoices(str,Enum):
     FOOD_AND_DRINKS = "FOOD_AND_DRINKS"
     GRAPHIC_DESIGN = "GRAPHIC_DESIGN"
     RECREATIONAL_AND_FUN_FAIR = 'RECREATIONAL_AND_FUN_FAIR'
+    Graphics = "Graphics"
+    cross_platform  = "cross_platform "
+    development = 'development'
+    backend = 'backend'
     
     
 class EventServicesDeliveryChoices(str,Enum):

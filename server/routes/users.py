@@ -80,7 +80,10 @@ async def create_account(user: UserCreation,latitude:float,longitude:float,respo
     hashed_password = pwd_context.hash(user.password)
     user_obj = User(
         email=user.email,
+        firstname=user.firstname,
+        lastname=user.lastname,
         password=hashed_password,
+        about=user.about,
         address = user_address,
         coordinates = user_coordinates,
         interest=user_interest
