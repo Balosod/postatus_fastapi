@@ -81,7 +81,10 @@ async def get_user(ID):
     return user
 
 @router.get("/all-coordinates",status_code =200)
-async def get_All_coordinate():
+async def get_All_coordinate(Authorize: AuthJWT = Depends()):
+    
+    Authorize.jwt_required()
+    
     all_coordinate_list = []
     
     try:
