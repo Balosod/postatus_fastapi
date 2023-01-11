@@ -88,6 +88,9 @@ class ImageSchema(BaseModel):
 class InterestSchema(BaseModel):
     interest: list
     
+class DeleteUser(BaseModel):
+    email: EmailStr = Field(...)
+    
 
 def SuccessResponseModel(data, code, message):
     return { "data": [data], "code": code, "message": message }

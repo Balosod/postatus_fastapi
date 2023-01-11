@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends,Response,status
 from fastapi_jwt_auth import AuthJWT
+from server.models.user import User
 from server.models.services import (Product, Service, Event, Delivery,ExploreSearch)
 from beanie.operators import RegEx,And,Or
 from ..utils.location_manager import get_location
@@ -73,3 +74,91 @@ async def explore_by_search_and_location(search_input:ExploreSearch, Authorize: 
     explore_by_search.extend(delivery)  
               
     return explore_by_search
+
+
+async def get_user(ID):
+    user = await User.get(ID)
+    return user
+
+@router.get("/all-coordinates",status_code =200)
+async def get_All_coordinate():
+    all_coordinate_list = []
+    
+    try:
+        products = await Product.find(fetch_links=True).to_list()
+        for product in products:
+            coordinate_dict ={}
+            user = await get_user(product.owner_id)
+            try:
+                coordinate =  user.coordinates.split(",")
+                latitude = coordinate[0]
+                longitude = coordinate[1]
+                coordinate_dict["latitude"] = latitude
+                coordinate_dict["longitude"] = longitude
+                coordinate_dict["types"] = product.types
+                coordinate_dict["image"] = product.image[0].img
+                all_coordinate_list.append(coordinate_dict)
+            except:
+                pass
+    except:
+        pass
+    
+    try:
+        services = await Service.find(fetch_links=True).to_list()
+        for service in services:
+            coordinate_dict ={}
+            user = await get_user(service.owner_id)
+            try:
+                coordinate =  user.coordinates.split(",")
+                latitude = coordinate[0]
+                longitude = coordinate[1]
+                coordinate_dict["latitude"] = latitude
+                coordinate_dict["longitude"] = longitude
+                coordinate_dict["types"] = service.types
+                coordinate_dict["image"] = service.image[0].img
+                all_coordinate_list.append(coordinate_dict)
+            except:
+                pass
+    except:
+        pass
+     
+    try:   
+        events = await Event.find(fetch_links=True).to_list()
+        for event in events:
+            coordinate_dict ={}
+            user = await get_user(event.owner_id)
+            try:
+                coordinate =  user.coordinates.split(",")
+                latitude = coordinate[0]
+                longitude = coordinate[1]
+                coordinate_dict["latitude"] = latitude
+                coordinate_dict["longitude"] = longitude
+                coordinate_dict["types"] = event.types
+                coordinate_dict["image"] = event.image[0].img
+                all_coordinate_list.append(coordinate_dict)
+            except:
+                pass
+    except:
+        pass
+    
+    try:    
+        deliverys = await Delivery.find(fetch_links=True).to_list()
+        for delivery in deliverys:
+            coordinate_dict ={}
+            user = await get_user(delivery.owner_id)
+            try:
+                coordinate =  user.coordinates.split(",")
+                latitude = coordinate[0]
+                longitude = coordinate[1]
+                coordinate_dict["latitude"] = latitude
+                coordinate_dict["longitude"] = longitude
+                coordinate_dict["types"] = delivery.types
+                coordinate_dict["image"] = delivery.image[0].img
+                all_coordinate_list.append(coordinate_dict)
+            except:
+                pass
+    except:
+        pass
+        
+    return all_coordinate_list
+

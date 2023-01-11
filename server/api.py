@@ -17,6 +17,8 @@ from server.routes.social_auth import router as socialRouter
 from server.routes.order_history import router as OrderRouter
 from server.routes.order_feedback import router as feedbackRouter
 
+from server.routes.delete import router as deleteRouter
+
 
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
@@ -69,6 +71,8 @@ app.include_router(interestRouter, tags=["interest"], prefix="/interest")
 app.include_router(dashboardRouter, tags=["dashboard"], prefix="/dashboard")
 app.include_router(OrderRouter, tags=["order"], prefix="/order")
 app.include_router(feedbackRouter, tags=["feedback"], prefix="/feedback")
+
+app.include_router(deleteRouter, tags=["delete"], prefix="/delete")
 
 
 
