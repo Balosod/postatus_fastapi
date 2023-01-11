@@ -37,9 +37,6 @@ async def get_similar_item(name,ID):
     else:
         return None
 
-class ProductShortView(BaseModel):
-    firstname: str
-    lastname: str
  
 async def get_user(ID):
     user = await User.get(ID)

@@ -179,6 +179,7 @@ class DeliverySchema(BaseModel):
     
 class ExploreSearch(BaseModel):
     search:str
+    location:str
     
     
     
