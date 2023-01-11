@@ -54,7 +54,7 @@ async def delete_all_event(response:Response) -> dict:
 @router.delete("/all/delivery", status_code = 200)
 async def delete_all_delivery(response:Response) -> dict:
     try:
-        deliverys = await Delivery.find(fetch_links=True).to_list()
+        deliverys = await Delivery.find_all().to_list()
         print(len(deliverys))
         for delivery in deliverys:
             delivery_to_delete = await Delivery.get(delivery.id)
