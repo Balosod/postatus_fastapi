@@ -80,15 +80,23 @@ async def get_user(ID):
     user = await User.get(ID)
     return user
 
-@router.get("/all-coordinates",status_code =200)
-async def get_All_coordinate(Authorize: AuthJWT = Depends()):
+@router.get("/all-coordinates/{latitude}/{longitude}",status_code =200)
+async def get_All_coordinate(latitude:float,longitude:float,Authorize: AuthJWT = Depends()):
     
     Authorize.jwt_required()
     
     all_coordinate_list = []
     
+    address = get_location(latitude,longitude)
     try:
-        products = await Product.find(fetch_links=True).to_list()
+        city = address["city"]
+        pattern = rf'.*{city}.*' 
+    except:
+        state = address["state"]
+        pattern = rf'.*{state}.*'
+    
+    try:
+        products = await Product.find(RegEx(Product.location, pattern,"i"),fetch_links=True).to_list()
         for product in products:
             coordinate_dict ={}
             user = await get_user(product.owner_id)
@@ -107,7 +115,7 @@ async def get_All_coordinate(Authorize: AuthJWT = Depends()):
         pass
     
     try:
-        services = await Service.find(fetch_links=True).to_list()
+        services = await Service.find(RegEx(Service.location, pattern,"i"),fetch_links=True).to_list()
         for service in services:
             coordinate_dict ={}
             user = await get_user(service.owner_id)
@@ -126,7 +134,7 @@ async def get_All_coordinate(Authorize: AuthJWT = Depends()):
         pass
      
     try:   
-        events = await Event.find(fetch_links=True).to_list()
+        events = await Event.find(RegEx(Event.location, pattern,"i"),fetch_links=True).to_list()
         for event in events:
             coordinate_dict ={}
             user = await get_user(event.owner_id)
@@ -145,7 +153,7 @@ async def get_All_coordinate(Authorize: AuthJWT = Depends()):
         pass
     
     try:    
-        deliverys = await Delivery.find(fetch_links=True).to_list()
+        deliverys = await Delivery.find(RegEx(Delivery.pick_up_location, pattern,"i"),fetch_links=True).to_list()
         for delivery in deliverys:
             coordinate_dict ={}
             user = await get_user(delivery.owner_id)
