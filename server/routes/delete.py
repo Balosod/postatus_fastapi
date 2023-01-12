@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,status,Response
 from fastapi_jwt_auth import AuthJWT
+from beanie import PydanticObjectId
 from server.models.user import User,DeleteUser
-
 from server.models.services import (Product, Service, Event, Delivery)
 
 
@@ -50,7 +50,19 @@ async def delete_all_event(response:Response) -> dict:
     except:
         response.status_code = 400
         return {"message":"something went wrong! or empty event list"}  
+ 
+@router.delete("/delivery/{ID}", status_code = 200)
+async def delete_a_delivery(ID:PydanticObjectId,response:Response) -> dict:
+    try:
+        delivery_to_delete = await Delivery.find_one(Delivery.id==ID, fetch_links=True)
+        await delivery_to_delete.delete()
+        return{"message":f"delivery with ID: {ID} successfully deleted"}
+    except:
+        response.status_code = 400
+        return {"message":"something went wrong! or empty delivery list"}
     
+    
+       
 @router.delete("/all/delivery", status_code = 200)
 async def delete_all_delivery(response:Response) -> dict:
     try:
