@@ -139,6 +139,7 @@ async def get_All_coordinate(latitude:float,longitude:float,Authorize: AuthJWT =
             coordinate_dict ={}
             user = await get_user(event.owner_id)
             try:
+                print("yes")
                 coordinate =  user.coordinates.split(",")
                 latitude = coordinate[0]
                 longitude = coordinate[1]

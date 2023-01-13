@@ -2,7 +2,7 @@ aiosmtplib==1.1.7
 anyio==3.6.2
 Authlib==1.2.0
 bcrypt==4.0.1
-beanie==1.11.0
+beanie==1.16.8
 blinker==1.5
 boto3==1.26.33
 botocore==1.29.33
@@ -27,14 +27,14 @@ itsdangerous==2.1.2
 Jinja2==3.1.2
 jmespath==1.0.1
 MarkupSafe==2.1.1
-motor==2.5.1
+motor==3.0
 multidict==6.0.3
 oauthlib==3.2.2
 passlib==1.7.4
 pycparser==2.21
 pydantic==1.10.2
 PyJWT==1.7.1
-pymongo==3.13.0
+pymongo==4.3.3
 pyotp==2.8.0
 python-dateutil==2.8.2
 python-decouple==3.3
