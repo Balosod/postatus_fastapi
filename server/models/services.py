@@ -113,6 +113,7 @@ class Event(CommonBase):
 class Delivery(Document):
     title:Optional[str] = None
     price:str
+    phone:Optional[str] = None
     description:str
     liked:Optional[bool] = False
     types:Optional[str] = "delivery"
@@ -136,7 +137,6 @@ class ProductSchema(BaseModel):
     title: str
     quantity:int
     category:CategoryChoices
-    location:str
     price:int
     description:str
     images:list
@@ -146,7 +146,6 @@ class ServiceSchema(BaseModel):
     delivery_type:EventServicesDeliveryChoices
     duration:str
     category:CategoryChoices
-    location:str
     price:int
     description:str
     images:list
@@ -156,7 +155,6 @@ class EventSchema(BaseModel):
     medium:EventServicesDeliveryChoices
     date_and_time:str
     category:CategoryChoices
-    location:str
     price:int
     description:str
     images:list
@@ -165,8 +163,8 @@ class EventSchema(BaseModel):
 class DeliverySchema(BaseModel):
     title: str
     price:Optional[int]=None
+    phone:Optional[str] = None
     description:Optional[str]=None
-    pick_up_location: Optional[str] = None
     delivery_location:Optional[str] = None
     category:Optional[DeliveryCategoryChoices] = None
     delivery_type:Optional[DeliveryChoices] = None
