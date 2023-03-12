@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends,status,Response
 from passlib.context import CryptContext
 from pydantic import  EmailStr, Field
 from typing import List
-from ..utils.helpers import fm
+from ..utils.helpers import api_instance
 from ..utils.helpers import EmailManager
 from ..utils import auth_service
 import base64
@@ -88,11 +88,17 @@ async def create_account(user: UserCreation,latitude:float,longitude:float,respo
         coordinates = user_coordinates,
         interest=user_interest
     )
-    await user_obj.create() 
+    try:
+        send_smtp_email  = EmailManager.send_welcome_msg(user.email)
+        api_response = api_instance.send_transac_email(send_smtp_email)
+        await user_obj.create()
+        return SuccessResponseModel(user, 201, "Account successfully created!" )
     
-    message  = EmailManager.send_welcome_msg(user.email)
-    await fm.send_message(message)
-    return SuccessResponseModel(user_obj, 201, "Account successfully created!" )
+    except:
+        return HTTPException(
+            status_code=400,
+            detail="User not created"
+        )
 
 
 
@@ -107,13 +113,13 @@ async def login_user(user: UserLogin, response:Response, Authorize: AuthJWT = De
         response.status_code = 400
         return HTTPException(
                 status_code=400,
-                detail="User with that email doesn't exist or password incorrect"
+                detail="Invalid email or Password"
             )
     except:
         response.status_code = 400
         return HTTPException(
                 status_code=400,
-                detail="User with that email doesn't exist or password incorrect"
+                detail="Invalid email or Password"
             )
 
 

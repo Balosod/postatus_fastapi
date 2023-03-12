@@ -1,9 +1,18 @@
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig,MessageType
 from pydantic import EmailStr, BaseModel
 from ..settings import CONFIG_SETTINGS
-from ..settings import conf
 import pyotp
 from jinja2 import Environment, select_autoescape, PackageLoader
+
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+
+
+configuration = sib_api_v3_sdk.Configuration()
+configuration.api_key['api-key'] = CONFIG_SETTINGS.SEND_IN_BLUE_API_KEY
+api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+
+
 
 mail_env = Environment(
     loader=PackageLoader('server', 'templates'),
@@ -12,7 +21,7 @@ mail_env = Environment(
 
 
 
-fm = FastMail(conf)
+
 
 class OTPManager:
     totp = pyotp.TOTP(CONFIG_SETTINGS.OTP_SECRET_KEY, interval=int(CONFIG_SETTINGS.OTP_EXPIRES))
@@ -68,11 +77,10 @@ class EmailManager:
                 otp=otp if otp else ''
         )
         
-        message = MessageSchema(
-        subject=subject,
-        recipients=[email], 
-        body=html,
-        subtype=MessageType.html
-        )
-        return message
-
+        
+        sender = {"name":"PhoneFlag","email":"phoneflag@gmail.com"}
+        replyTo = {"name":"PhoneFlag","email":"phoneflag@gmail.com"}
+        to = [{"email":f"{email}"}]
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(to=to, reply_to=replyTo,  html_content=html, sender=sender, subject=subject)
+        
+        return send_smtp_email
